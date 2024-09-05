@@ -1,11 +1,15 @@
-export interface Pokemon {
-  name: string;
-  url: string;
-}
+import { z } from "zod";
 
-export interface PokemonResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Pokemon[];
-}
+const PokemonSchema = z.object({
+  count: z.number(),
+  next: z.string().nullable(),
+  previous: z.string().nullable(),
+  results: z.array(
+    z.object({
+      name: z.string(),
+      url: z.string().url(),
+    }),
+  ),
+});
+
+export type PokemonResponse = z.infer<typeof PokemonSchema>;
