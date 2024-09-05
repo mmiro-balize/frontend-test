@@ -12,4 +12,20 @@ const PokemonSchema = z.object({
   ),
 });
 
+const PokemonDetailsSchema = z.object({
+  id: z.number(),
+  sprites: z.object({
+    front_default: z.string().url(),
+  }),
+  types: z.array(
+    z.object({
+      slot: z.number(),
+      type: z.object({
+        name: z.string(),
+      }),
+    }),
+  ),
+});
+
 export type PokemonResponse = z.infer<typeof PokemonSchema>;
+export type PokemonDetails = z.infer<typeof PokemonDetailsSchema>;
