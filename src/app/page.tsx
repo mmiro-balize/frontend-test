@@ -1,8 +1,15 @@
 import Image from "next/image";
 import { PokemonResponse, PokemonDetails } from "../types";
 
-const getPokemon = async (): Promise<PokemonResponse> => {
-  const response = await fetch("https://pokeapi.co/api/v2/pokemon");
+const LIMIT = 10;
+
+const getPokemon = async (
+  offset = 0,
+  limit = LIMIT,
+): Promise<PokemonResponse> => {
+  const response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
+  );
   if (!response.ok) {
     throw new Error("Failed to fetch pokemon");
   }
@@ -18,8 +25,14 @@ const getPokemonDetails = async (url: string): Promise<PokemonDetails> => {
   return response.json() as Promise<PokemonDetails>;
 };
 
-export default async function HomePage() {
-  const pokemonData = await getPokemon();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const page = Number(searchParams.page) || 1;
+
+  const pokemonData = await getPokemon((page - 1) * LIMIT, LIMIT);
   const pokemonDetails = await Promise.all(
     pokemonData.results.map(async (pokemon) => {
       const details = await getPokemonDetails(pokemon.url);
@@ -69,6 +82,25 @@ export default async function HomePage() {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="mt-4 flex gap-4">
+        {pokemonData.previous && (
+          <a
+            href={`?page=${page - 1}`}
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            aria-disabled={!pokemonData.previous}
+          >
+            Previous
+          </a>
+        )}
+        {pokemonData.next && (
+          <a
+            href={`?page=${page + 1}`}
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          >
+            Next
+          </a>
+        )}
       </div>
     </main>
   );
