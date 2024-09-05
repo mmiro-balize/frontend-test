@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { PokemonResponse, PokemonDetails } from "../types";
+import Pagination from "#/components/pagination";
 
 const LIMIT = 10;
 
@@ -50,13 +51,13 @@ export default async function HomePage({
           </caption>
           <thead>
             <tr className="bg-gray-100">
-              <th className="border-b p-2 text-left font-semibold text-gray-700">
+              <th className="w-1/3 border-b p-2 text-left font-semibold text-gray-700">
                 Name
               </th>
-              <th className="border-b p-2 text-left font-semibold text-gray-700">
+              <th className="w-1/3 border-b p-2 text-left font-semibold text-gray-700">
                 Image
               </th>
-              <th className="border-b p-2 text-left font-semibold text-gray-700">
+              <th className="w-1/3 border-b p-2 text-left font-semibold text-gray-700">
                 Types
               </th>
             </tr>
@@ -64,8 +65,10 @@ export default async function HomePage({
           <tbody>
             {pokemonDetails.map((pokemon) => (
               <tr key={pokemon.name} className="hover:bg-gray-50">
-                <td className="border-b p-2 text-gray-800">{pokemon.name}</td>
-                <td className="border-b p-2 text-gray-800">
+                <td className="w-1/3 border-b p-2 text-gray-800">
+                  {pokemon.name}
+                </td>
+                <td className="w-1/3 border-b p-2 text-gray-800">
                   <Image
                     src={pokemon.details.sprites.front_default}
                     alt={pokemon.name}
@@ -73,7 +76,7 @@ export default async function HomePage({
                     height={50}
                   />
                 </td>
-                <td className="border-b p-2 text-gray-800">
+                <td className="w-1/3 border-b p-2 text-gray-800">
                   {pokemon.details.types
                     .map((type) => type.type.name)
                     .join(", ")}
@@ -83,25 +86,11 @@ export default async function HomePage({
           </tbody>
         </table>
       </div>
-      <div className="mt-4 flex gap-4">
-        {pokemonData.previous && (
-          <a
-            href={`?page=${page - 1}`}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            aria-disabled={!pokemonData.previous}
-          >
-            Previous
-          </a>
-        )}
-        {pokemonData.next && (
-          <a
-            href={`?page=${page + 1}`}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            Next
-          </a>
-        )}
-      </div>
+      <Pagination
+        currentPage={page}
+        hasPrevious={!!pokemonData.previous}
+        hasNext={!!pokemonData.next}
+      />
     </main>
   );
 }
